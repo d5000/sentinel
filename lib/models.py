@@ -102,7 +102,6 @@ class GovernanceObject(BaseModel):
     def import_gobject_from_terracoind(self, terracoind, rec):
         import decimal
         import terracoinlib
-        import inflection
         import gobject_json
 
         object_hex = rec['DataHex']
