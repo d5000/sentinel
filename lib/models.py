@@ -103,6 +103,7 @@ class GovernanceObject(BaseModel):
         import decimal
         import terracoinlib
         import inflection
+        import gobject_json
 
         object_hex = rec['DataHex']
         object_hash = rec['Hash']
@@ -116,14 +117,18 @@ class GovernanceObject(BaseModel):
             'no_count': rec['NoCount'],
         }
 
-        # shim/terracoind conversion
-        object_hex = terracoinlib.SHIM_deserialise_from_terracoind(object_hex)
-        objects = terracoinlib.deserialise(object_hex)
+
+        # deserialise and extract object
+        json_str = binascii.unhexlify(rec["DataHex"]).decode("utf-8")
+        dikt = gobject_json.extract_object(json_str)
+
         subobj = None
 
-        obj_type, dikt = objects[0:2:1]
-        obj_type = inflection.pluralize(obj_type)
-        subclass = [self._meta.backrefs[b] for b in self._meta.backrefs if b.backref == obj_type][0]
+        type_class_map = {
+            1: Proposal,
+            2: Superblock,
+        }
+        subclass = type_class_map[dikt["type"]]
 
         # set object_type in govobj table
         gobj_dict['object_type'] = subclass.govobj_type
