@@ -70,7 +70,7 @@ class GovernanceObject(BaseModel):
     absolute_yes_count = IntegerField(default=0)
 
     class Meta:
-        db_table = 'governance_objects'
+        table_name = 'governance_objects'
 
     # sync terracoind gobject list with our local relational DB backend
     @classmethod
@@ -263,11 +263,11 @@ class Setting(BaseModel):
     updated_at = DateTimeField(default=datetime.datetime.utcnow())
 
     class Meta:
-        db_table = 'settings'
+        table_name = 'settings'
 
 
 class Proposal(GovernanceClass, BaseModel):
-    governance_object = ForeignKeyField(GovernanceObject, related_name='proposals', on_delete='CASCADE', on_update='CASCADE')
+    governance_object = ForeignKeyField(GovernanceObject, backref='proposals', on_delete='CASCADE', on_update='CASCADE')
     name = CharField(default='', max_length=40)
     url = CharField(default='')
     start_epoch = IntegerField()
@@ -279,7 +279,7 @@ class Proposal(GovernanceClass, BaseModel):
     govobj_type = TERRACOIND_GOVOBJ_TYPES['proposal']
 
     class Meta:
-        db_table = 'proposals'
+        table_name = 'proposals'
 
     def is_valid(self, terracoind):
         import terracoinlib
@@ -440,7 +440,7 @@ class Proposal(GovernanceClass, BaseModel):
 
 
 class Superblock(BaseModel, GovernanceClass):
-    governance_object = ForeignKeyField(GovernanceObject, related_name='superblocks', on_delete='CASCADE', on_update='CASCADE')
+    governance_object = ForeignKeyField(GovernanceObject, backref='superblocks', on_delete='CASCADE', on_update='CASCADE')
     event_block_height = IntegerField()
     payment_addresses = TextField()
     payment_amounts = TextField()
@@ -452,7 +452,7 @@ class Superblock(BaseModel, GovernanceClass):
     only_masternode_can_submit = True
 
     class Meta:
-        db_table = 'superblocks'
+        table_name = 'superblocks'
 
     def is_valid(self, terracoind):
         import terracoinlib
@@ -578,7 +578,7 @@ class Signal(BaseModel):
     updated_at = DateTimeField(default=datetime.datetime.utcnow())
 
     class Meta:
-        db_table = 'signals'
+        table_name = 'signals'
 
 
 class Outcome(BaseModel):
@@ -587,24 +587,24 @@ class Outcome(BaseModel):
     updated_at = DateTimeField(default=datetime.datetime.utcnow())
 
     class Meta:
-        db_table = 'outcomes'
+        table_name = 'outcomes'
 
 
 class Vote(BaseModel):
-    governance_object = ForeignKeyField(GovernanceObject, related_name='votes', on_delete='CASCADE', on_update='CASCADE')
-    signal = ForeignKeyField(Signal, related_name='votes', on_delete='CASCADE', on_update='CASCADE')
-    outcome = ForeignKeyField(Outcome, related_name='votes', on_delete='CASCADE', on_update='CASCADE')
+    governance_object = ForeignKeyField(GovernanceObject, backref='votes', on_delete='CASCADE', on_update='CASCADE')
+    signal = ForeignKeyField(Signal, backref='votes', on_delete='CASCADE', on_update='CASCADE')
+    outcome = ForeignKeyField(Outcome, backref='votes', on_delete='CASCADE', on_update='CASCADE')
     voted_at = DateTimeField(default=datetime.datetime.utcnow())
     created_at = DateTimeField(default=datetime.datetime.utcnow())
     updated_at = DateTimeField(default=datetime.datetime.utcnow())
     object_hash = CharField(max_length=64)
 
     class Meta:
-        db_table = 'votes'
+        table_name = 'votes'
 
 
 class Watchdog(BaseModel, GovernanceClass):
-    governance_object = ForeignKeyField(GovernanceObject, related_name='watchdogs')
+    governance_object = ForeignKeyField(GovernanceObject, backref='watchdogs')
     created_at = IntegerField()
     object_hash = CharField(max_length=64)
 
@@ -644,7 +644,7 @@ class Watchdog(BaseModel, GovernanceClass):
         return False
 
     class Meta:
-        db_table = 'watchdogs'
+        table_name = 'watchdogs'
 
 
 class Transient(object):
