@@ -25,7 +25,7 @@ except ImportError:
 from governance_class import GovernanceClass
 
 db = config.db
-db.connect()
+db.connect(reuse_if_open=True)
 
 
 # TODO: lookup table?
@@ -123,7 +123,7 @@ class GovernanceObject(BaseModel):
 
         obj_type, dikt = objects[0:2:1]
         obj_type = inflection.pluralize(obj_type)
-        subclass = self._meta.reverse_rel[obj_type].model_class
+        subclass = [self._meta.backrefs[b] for b in self._meta.backrefs if b.backref == obj_type][0]
 
         # set object_type in govobj table
         gobj_dict['object_type'] = subclass.govobj_type
@@ -764,7 +764,7 @@ def check_db_sane():
     for model in db_models():
         if not getattr(model, 'table_exists')():
             missing_table_models.append(model)
-            printdbg("[warning]: table for %s (%s) doesn't exist in DB." % (model, model._meta.db_table))
+            printdbg("[warning]: table for %s (%s) doesn't exist in DB." % (model, model._meta.table_name))
 
     if missing_table_models:
         printdbg("[warning]: Missing database tables. Auto-creating tables.")
@@ -792,7 +792,8 @@ def check_db_schema_version():
         printdbg("[info]: Schema version mis-match. Syncing tables.")
         try:
             existing_table_names = db.get_tables()
-            existing_models = [m for m in db_models() if m._meta.db_table in existing_table_names]
+            existing_models = [m for m in db_models() if m._meta.table_name in existing_table_names]
+
             if (existing_models):
                 printdbg("[info]: Dropping tables...")
                 db.drop_tables(existing_models, safe=False, cascade=False)
