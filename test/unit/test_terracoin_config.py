@@ -8,8 +8,6 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../../
 import config
 from terracoin_config import TerracoinConfig
 
-
-@pytest.fixture
 def terracoin_conf(**kwargs):
     defaults = {
         'rpcuser': 'terracoinrpc',

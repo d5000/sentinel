@@ -5,12 +5,10 @@ os.environ['SENTINEL_CONFIG'] = os.path.normpath(os.path.join(os.path.dirname(__
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../../lib')))
 
 
-@pytest.fixture
 def valid_terracoin_address(network='mainnet'):
     return 'mtHjXMx6dvTwgcvkDvsuWftiyNPi26RqDq' if (network == 'testnet') else '142So3onajFZfojruob5oqtxYT7SkU5Zcs'
 
 
-@pytest.fixture
 def invalid_terracoin_address(network='mainnet'):
     return 'mtHjXMx6dvTwgcvkDvsuWftiyNPi26RqDr' if (network == 'testnet') else '142So3onajFZfojruob5oqtxYT7SkU5Zct'
 
@@ -35,7 +33,6 @@ def mn_list():
     return mnlist
 
 
-@pytest.fixture
 def mn_status_good():
     # valid masternode status enabled & running
     status = {
@@ -47,7 +44,6 @@ def mn_status_good():
     return status
 
 
-@pytest.fixture
 def mn_status_bad():
     # valid masternode but not running/waiting
     status = {
